@@ -9,13 +9,13 @@ Used Microsoft Visual Studio 2017
 
 Car class
 Reads data from "data.txt" and prints it.
+Uses STL vector of Car objects
 */
 #include <iostream>
-#include <iomanip>
+#include <iomanip>      // std::setw
 #include <string>
-#include <limits>
 #include <fstream>      // std::fstream
-#include <stdio.h>
+#include <vector>
 using namespace std;
 
 /**************************************************
@@ -30,12 +30,12 @@ private:
 	bool loaded;
 	string destination;
 public:
-	Car () { setup ("", 0, "other", false, "NONE"); } //default constructor
-	Car (const Car &CarObj) { setup (CarObj.reportingMark, CarObj.carNumber, CarObj.kind, CarObj.loaded, CarObj.destination); } //copy constructor
-	Car (string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit) { setup (reportingMarkInit, carNumberInit, kindInit, loadedInit, destinationInit); } //other constructor
-	~Car () {} // destructor
-	void setup (string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit);
-	void output ();
+	Car() { setup("", 0, "other", false, "NONE"); } //default constructor
+	Car(const Car &CarObj) { setup(CarObj.reportingMark, CarObj.carNumber, CarObj.kind, CarObj.loaded, CarObj.destination); } //copy constructor
+	Car(string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit) { setup(reportingMarkInit, carNumberInit, kindInit, loadedInit, destinationInit); } //other constructor
+	~Car() {} // destructor
+	void setup(string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit);
+	void output();
 	Car & Car::operator=(const Car & carB);
 };
 
@@ -46,60 +46,49 @@ public:
 class StringOfCars
 {
 private:
-	Car *carArray;
-	static const int ARRAY_SIZE = 10;
-	int carCount;
+	vector<Car> carVector;
 public:
-	StringOfCars () //default constructor
+	StringOfCars() {} //default constructor
+	StringOfCars(const vector<Car> &StringOfCarsObj)  //copy constructor
 	{
-		carArray = new Car[ARRAY_SIZE];
-		carCount = 0;
+		carVector = StringOfCarsObj;
 	}
-	StringOfCars (const StringOfCars &StringOfCarsObj)  //copy constructor
-	{
-		carArray = new Car[ARRAY_SIZE];
-		for (int i; i < ARRAY_SIZE; i++)
-		{
-			carArray[i] = Car (StringOfCarsObj.carArray[i]);
-		}
-		carCount = StringOfCarsObj.carCount;
-	}
-	~StringOfCars () { delete[] carArray; } // destructor
+	~StringOfCars() {} // destructor
 
-	void output ();
-	void push (Car &CarObj);
-	void pop (Car &CarObj);
+	void output();
+	void push(Car &CarObj);
+	void pop(Car &CarObj);
 };
 
 /**************************************************
 ** global functions, and variables
 **************************************************/
 
-void input (StringOfCars & StringOfCarsObj);
+void input(StringOfCars & StringOfCarsObj);
 
-int main ()
+int main()
 {
 	// Test the Car operator=   function. 
 	cout << "TEST 1" << endl;
-	Car car1 ("SP", 34567, "business", true, "Salt Lake City");
+	Car car1("SP", 34567, "business", true, "Salt Lake City");
 	Car car2;
 	car2 = car1;
-	car2.output ();
+	car2.output();
 	// Test the StringOfCar push function.
 	cout << "TEST 2" << endl;
 	StringOfCars string1;
-	input (string1);
+	input(string1);
 	cout << "STRING 1" << endl;
-	string1.output ();
+	string1.output();
 	// Test the StringOfCars pop function. 
 	cout << "TEST 3" << endl;
 	Car car3;
-	string1.pop (car3);
+	string1.pop(car3);
 	cout << "CAR 3" << endl;
-	car3.output ();
+	car3.output();
 	cout << "STRING 1" << endl;
-	string1.output ();
-	system ("pause");
+	string1.output();
+	system("pause");
 	return 0;
 }
 
@@ -110,7 +99,7 @@ int main ()
 /******************* Car::setup *******************
 ** Puts the car data into the object
 **************************************************/
-void Car::setup (string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit)
+void Car::setup(string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit)
 {
 	reportingMark = reportingMarkInit;
 	carNumber = carNumberInit;
@@ -122,17 +111,17 @@ void Car::setup (string reportingMarkInit, int carNumberInit, string kindInit, b
 /********************* Car::output ****************
 ** Prints the car data in a neat format
 **************************************************/
-void Car::output ()
+void Car::output()
 {
 	// cout << bool will output an integer
 	// we create a temporary string to output the bool
 	// std::boolalpha can also be used
 	string loadedString = (!loaded) ? "false" : "true";
-	cout << setw (16) << left << "reportingMark:" << reportingMark << endl
-		<< setw (16) << left << "carNumber: " << carNumber << endl
-		<< setw (16) << left << "kind: " << kind << endl
-		<< setw (16) << left << "loaded: " << loadedString << endl
-		<< setw (16) << left << "destination: " << destination << endl << endl;
+	cout << setw(16) << left << "reportingMark:" << reportingMark << endl
+		<< setw(16) << left << "carNumber: " << carNumber << endl
+		<< setw(16) << left << "kind: " << kind << endl
+		<< setw(16) << left << "loaded: " << loadedString << endl
+		<< setw(16) << left << "destination: " << destination << endl << endl;
 }
 
 /********************* operator= ******************
@@ -140,7 +129,7 @@ void Car::output ()
 **************************************************/
 Car & Car::operator=(const Car & carB)
 {
-	setup (carB.reportingMark, carB.carNumber, carB.kind, carB.loaded, carB.destination);
+	setup(carB.reportingMark, carB.carNumber, carB.kind, carB.loaded, carB.destination);
 
 	return *this;
 }
@@ -153,14 +142,16 @@ Car & Car::operator=(const Car & carB)
 ** Outputs each car data. Prints "NO cars" if
 ** StringOfCars is empty.
 **************************************************/
-void StringOfCars::output ()
+void StringOfCars::output()
 {
-	if (carCount > 0)
+	unsigned int i, n;
+	n = carVector.size();
+	if (n > 0)
 	{
-		for (int i = 0; i < carCount; i++)
+		for (i = 0; i < n; i++)
 		{
 			cout << "Car #" << i + 1 << endl;
-			carArray[i].output ();
+			carVector[i].output();
 		}
 	}
 	else
@@ -172,36 +163,27 @@ void StringOfCars::output ()
 /*************** StringOfCars::push ***************
 ** Puts a Car into the StringOfCars array
 **************************************************/
-void StringOfCars::push (Car &CarObj)
+void StringOfCars::push(Car &CarObj)
 {
-	if (carCount < ARRAY_SIZE)
-	{
-		carArray[carCount] = CarObj;
-		carCount++;
-	}
-	else
-	{
-		cout << "string of cars is full";
-		exit (EXIT_FAILURE);
-	}
+	carVector.push_back(CarObj);
 }
 
 /*************** StringOfCars::pop ****************
 ** Removes the last Car added from the StringOfCars
 ** assigns removed Car to the argument
 **************************************************/
-void StringOfCars::pop (Car &CarObj)
+void StringOfCars::pop(Car &CarObj)
 {
-	if (carCount > 0)
+	if (carVector.size() > 0)
 	{
-		CarObj = carArray[carCount - 1];
-		//delete &carArray[carCount - 1];
-		carCount--;
+		Car tempCar = carVector.back();
+		carVector.pop_back();
+		CarObj = tempCar;
 	}
 	else
 	{
 		cout << "string of cars is empty";
-		exit (EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -213,36 +195,36 @@ void StringOfCars::pop (Car &CarObj)
 ** Reads the car data from the text file "data.txt"
 ** Prints data from the file
 **************************************************/
-void input (StringOfCars & StringOfCarsObj)
+void input(StringOfCars & StringOfCarsObj)
 {
 	string carType, reportingMarkInit, kindInit, destinationInit, loadedInit;
 	int carNumberInit;
 	std::fstream inputFile;
-	inputFile.open ("data.txt");
+	inputFile.open("data.txt");
 	if (!inputFile)
 	{
 		cerr << "File could not be opened." << endl;
-		exit (1);
+		exit(1);
 	}
-	while (inputFile.peek () != EOF)
+	while (inputFile.peek() != EOF)
 	{
-		while (inputFile.peek () == ' ')
-			inputFile.get ();
+		while (inputFile.peek() == ' ')
+			inputFile.get();
 		inputFile >> carType >> reportingMarkInit >> carNumberInit >> kindInit >> loadedInit;
-		while (inputFile.peek () == ' ')
-			inputFile.get ();
-		getline (inputFile, destinationInit);
+		while (inputFile.peek() == ' ')
+			inputFile.get();
+		getline(inputFile, destinationInit);
 		// If the carType is not "Car", send an error message and do nothing.
 		if (carType == "Car")
 		{
 			// If the carType is "Car", declare a Car object named temp using the constructor that takes 5 parameters.
-			Car temp (reportingMarkInit, carNumberInit, kindInit, loadedInit == "true" ? true : false, destinationInit);
-			StringOfCarsObj.push (temp);
+			Car temp(reportingMarkInit, carNumberInit, kindInit, loadedInit == "true" ? true : false, destinationInit);
+			StringOfCarsObj.push(temp);
 		}
 		// If the carType is not "Car", send an error message and do nothing.
 		else cerr << "Not a car" << endl;
 	}
-	inputFile.close ();
+	inputFile.close();
 }
 
 /* Execution results
