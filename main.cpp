@@ -2,8 +2,8 @@
 Branden Lee
 CIS 22B
 Fall 2017
-Assignment D
-Problem D2
+Assignment OEC
+Problem OEC1
 
 Used Microsoft Visual Studio 2017
 
